@@ -7,6 +7,8 @@ import { useSelector } from 'react-redux';
 import { SelectUserId } from '../Redux/UserSlice';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import {Ionicons} from '@expo/vector-icons';
+import * as ImagePicker from "expo-image-picker";
+import { FontAwesome } from '@expo/vector-icons';
 
 const ChatMessageScreen = () => {
 
@@ -130,6 +132,22 @@ const ChatMessageScreen = () => {
         return new Date(time).toLocaleString("en-US",options);
     }
 
+    // funciton used when camera is opened 
+    const openImage= async ()=>{
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        // console.log(result);
+        if (!result.canceled){
+            handleSend("image",result.uri);
+        }
+    }
+
+
     // console.log(ReceipntData);
     // console.log("Name ",ReceipntData._j?.name);
     console.log("Messages " , Messages);
@@ -154,6 +172,32 @@ const ChatMessageScreen = () => {
                     </Pressable>
                 )
             }
+
+            if (item.messageType === 'image'){
+                const baseUrl = "../Api/uploads/";
+                const imageUrl = item.imageUrl;
+                const filename = imageUrl.split('\\').pop();
+                const stringWithoutWhitespace = filename.replace(/ /g, "");
+
+
+                const ur ="1694618328226-195-image.jpg";
+                console.log(stringWithoutWhitespace);
+                
+                return (
+                    <Pressable
+                        key={index}
+                        style={[
+                            item?.senderId?._id === userId ? 
+                            {alignSelf:"flex-end" ,margin:10, backgroundColor:"#DCF8C6",padding:8,maxWidth:"60%",borderRadius:7}:
+                            {alignSelf:"flex-start" , backgroundColor:"white" , padding:8 , margin:10 , borderRadius:7 , maxWidth:"60%"} 
+                        ]}
+                    >
+                        <Image source={require(`../Api/uploads/${ur}`)} style={{width:200,height:200,borderRadius:7}}></Image>    
+                        <Text style={{textAlign:"right", fontSize:9 , color:"gray",position:"absolute",right:9,marginTop:5,bottom:7}}>{formatTime(item?.timeStamp)}</Text>
+                    </Pressable>
+                )
+
+            }
         })}
       </ScrollView>
 
@@ -170,7 +214,7 @@ const ChatMessageScreen = () => {
         </TextInput>
 
         <View style={{flexDirection:"row", alignItems:"center",gap:7,marginHorizontal:8}}>
-            <Entypo name="camera" size={24} color={"gray"}></Entypo>
+            <FontAwesome onPress={openImage} name="photo" size={24} color={"gray"}></FontAwesome>
             <Feather name="mic" size={24} color="black" ></Feather>
         </View>
         

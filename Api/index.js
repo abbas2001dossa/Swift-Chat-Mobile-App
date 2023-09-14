@@ -244,9 +244,18 @@ app.get("/acceptedFriends/:userId" ,async  (req,res)=>{
 });
 
 
+const storage =multer.diskStorage({
+    destination: function (req,file,cb){
+        cb(null,'uploads/');  // desired destination folder 
+    },
+    filename: function(req,file,cb){
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1000 );
+        cb(null,uniqueSuffix + '-' + file.originalname);
 
-// const upload = multer({ storage:storage});
-const upload = multer({ dest: './Api/uploads/' });
+    },
+});
+
+const upload = multer({ storage:storage});
 
 // end point to post messages and store it in the backend 
 app.post("/Messages", upload.single("imageFile"), async (req,res)=>{
@@ -259,7 +268,7 @@ app.post("/Messages", upload.single("imageFile"), async (req,res)=>{
             messageType,
             message:messageText,
             timeStamp: new Date(),
-            imageUrl:messageType==="image",
+            imageUrl:messageType==="image" ? req.file.path : null,
         });
 
         await newMessage.save();
