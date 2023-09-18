@@ -321,6 +321,25 @@ app.get("/Messages/:senderId/:receipntId",  async (req,res)=>{
 
 
 
+// end point to delete the emessage s
+app.post("/deleteMessages",async  (req,res)=>{
+    try{
+        const {messages}=req.body ;
+        console.log("Messages To be Deleted : ",messages);
+        if ( messages.length === 0 ){
+            return res.status(400).json({message:"Invalid Request Body"});
+        }
+
+        await Message.deleteMany({_id:{$in:messages}});
+        res.json({message:"Message Deleted Successfully "});
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).json({message:"Internal Server Error"});
+    }
+});
+
+
 
 app.listen(port,()=>{
     console.log("Server Running On Port 8000");
