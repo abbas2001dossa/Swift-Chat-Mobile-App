@@ -340,6 +340,41 @@ app.post("/deleteMessages",async  (req,res)=>{
 });
 
 
+// friend request sent 
+app.get("/friendsRequests/sent/:userId",async (req,res)=>{
+    try{
+        const {userId}=req.params;
+        const user = await User.findById(userId).populate("sentFriendRequests","name email").lean();
+        const sentFriendRequests =user.sentFriendRequests;
+        res.json(sentFriendRequests);
+
+    }
+    catch(error){
+        console.log("error",error);
+        res.status(500).json({message:"Internal Server Error !"});
+    }
+});
+
+
+// friendList of users
+app.get("/friends/:userId",(req,res)=>{
+    try{
+        const {userId}=req.params;
+        const user = User.findById(userId).populate("friends").then((user)=>{
+            if (!user){
+                return res.status(400).json({message:"USer not found "});
+            }
+
+            const friendsId = user.friends.map((friend)=> friend._id);
+            res.status(200).json(friendsId);
+        })
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).json({message:"Internal Server Error !"});
+
+    }
+});
 
 app.listen(port,()=>{
     console.log("Server Running On Port 8000");

@@ -52,7 +52,7 @@ const LoginScreen = () => {
       AsyncStorage.setItem("authToken",token);
 
       console.log(response.data.message);
-      Alert.alert("Login Successful", "You have been logged in successfully");
+      // Alert.alert("Login Successful", "You have been logged in successfully");
       navigation.navigate('Home');  
     })
     .catch((error)=>{
